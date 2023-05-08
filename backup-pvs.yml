@@ -1,0 +1,16 @@
+- name: Back up k3s application persistent volumes
+  hosts: k3s
+  become: true
+  vars:
+    app_name: homer
+  tasks:
+    - name: Find PVs on disk
+      ansible.builtin.find:
+        paths: /var/lib/rancher/k3s/storage/
+        depth: 1
+        file_type: directory
+      register: pv_dirs
+
+    - debug:
+        var: item.path
+      with_items: "{{ pv_dirs.files }}"
