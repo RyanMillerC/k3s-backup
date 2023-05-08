@@ -1,4 +1,4 @@
 .PHONY: run
 
 run:
-	ansible-playbook --inventory ./inventory backup-pvs.yml
+	ansible-playbook --inventory ./inventory backup-apps.yml
