@@ -1,16 +1,28 @@
 - name: Back up k3s application persistent volumes
   hosts: k3s
   become: true
+  environment:
+    K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   vars:
+    # Used for namespace
     app_name: homer
+    pvc_name: homer-assets
   tasks:
-    - name: Find PVs on disk
-      ansible.builtin.find:
-        paths: /var/lib/rancher/k3s/storage/
-        depth: 1
-        file_type: directory
-      register: pv_dirs
+    - name: Get PVC object
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: "{{ pvc_name }}"
+        namespace: "{{ app_name }}"
+      register: pvc
+
+    - name: Get PV object
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: PersistentVolume
+        name: "{{ pvc.resources[0].spec.volumeName }}"
+      register: pv
 
     - debug:
-        var: item.path
-      with_items: "{{ pv_dirs.files }}"
+        #var: pv
+        msg: "{{ pv.resources[0].spec.hostPath.path }}"
