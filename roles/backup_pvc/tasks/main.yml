@@ -1,0 +1,17 @@
+- name: Get PVC object
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: "{{ pvc_name }}"
+    namespace: "{{ pvc_namespace }}"
+  register: pvc
+
+- name: Get PV object
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: PersistentVolume
+    name: "{{ pvc.resources[0].spec.volumeName }}"
+  register: pv
+
+- debug:
+    msg: "Backing up PV {{ pv.resources[0].spec.hostPath.path }}"

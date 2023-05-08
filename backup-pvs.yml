@@ -16,28 +16,10 @@
         namespace: "{{ app_namespace }}"
       register: deployment
 
-    - debug:
-        #var: deployment
-        msg: "{{ deployment.resources[0].spec.template.spec.volumes }}"
-
-    # Stop running playbook
-    - meta: end_play
-
-    - name: Get PVC object
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: PersistentVolumeClaim
-        name: "{{ pvc_name }}"
-        namespace: "{{ app_name }}"
-      register: pvc
-
-    - name: Get PV object
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: PersistentVolume
-        name: "{{ pvc.resources[0].spec.volumeName }}"
-      register: pv
-
-    - debug:
-        #var: pv
-        msg: "{{ pv.resources[0].spec.hostPath.path }}"
+    - name: Back up PVC
+      ansible.builtin.include_role:
+        name: backup_pvc
+      vars:
+        pvc_name: "{{ item.persistentVolumeClaim.claimName }}"
+        pvc_namespace: "{{ app_namespace }}"
+      loop: "{{ deployment.resources[0].spec.template.spec.volumes }}"
