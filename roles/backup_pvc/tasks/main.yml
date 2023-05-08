@@ -13,5 +13,13 @@
     name: "{{ pvc.resources[0].spec.volumeName }}"
   register: pv
 
-- debug:
-    msg: "Backing up PV {{ pv.resources[0].spec.hostPath.path }}"
+- name: Create backup directory
+  ansible.builtin.file:
+    path: "/nfs/Backup/PVs/{{ pvc_name }}"
+    state: directory
+
+- name: Copy PV directory to backup directory
+  ansible.builtin.copy:
+    src: "{{ pv.resources[0].spec.hostPath.path }}"
+    dest: "/nfs/Backup/PVs/{{ pvc_name }}/{{ ansible_date_time.date }}-{{ pvc_name}}"
+    remote_src: yes
