@@ -1,3 +1,10 @@
 ---
 # defaults file for backup_pvc
+
+# Number of Pod replicas will be set to this variable. This is intentional in
+# case one run set the replicas to 0 and didn't scale them back up. That would
+# lead to the scaling back up to 0.
 app_replicas: 1
+
+# PV backups will go into subdirectories of backup_base_dir
+backup_base_dir: /nfs/Backup/PVs

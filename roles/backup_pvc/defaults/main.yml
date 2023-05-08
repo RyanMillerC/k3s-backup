@@ -1,2 +1,5 @@
 ---
 # defaults file for backup_pvc
+
+# PV backups will go into subdirectories of backup_base_dir
+backup_base_dir: /nfs/Backup/PVs

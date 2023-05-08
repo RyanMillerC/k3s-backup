@@ -15,11 +15,11 @@
 
 - name: Create backup directory
   ansible.builtin.file:
-    path: "/nfs/Backup/PVs/{{ pvc_name }}"
+    path: "{{ [backup_base_dir, pvc_name] | path_join }}"
     state: directory
 
 - name: Copy PV directory to backup directory
   ansible.builtin.copy:
     src: "{{ pv.resources[0].spec.hostPath.path }}"
-    dest: "/nfs/Backup/PVs/{{ pvc_name }}/{{ ansible_date_time.date }}-{{ pvc_name}}"
+    dest: "{{ [backup_base_dir, pvc_name, '{}-{}'.format(ansible_date_time.date, pvc_name)] | path_join }}"
     remote_src: yes
