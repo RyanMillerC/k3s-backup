@@ -1,0 +1,6 @@
+# Applications with data in PersistentVolumes (PVs) to be backed up. Name is
+# the name of the application Deployment. Namespace is the Kubernetes namespace
+# that the Deployment and PersistentVolumeClaim (PVC) are in.
+apps:
+  - name: homer
+    namespace: homer

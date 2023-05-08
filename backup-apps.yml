@@ -3,10 +3,8 @@
   become: true
   environment:
     K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  vars:
-    apps:
-      - name: homer
-        namespace: homer
+  vars_files:
+    - vars.yml
   tasks:
     - name: Back up apps
       ansible.builtin.include_role:
