@@ -2,5 +2,13 @@
 # the name of the application Deployment. Namespace is the Kubernetes namespace
 # that the Deployment and PersistentVolumeClaim (PVC) are in.
 apps:
+  - name: bitwarden
+    namespace: bitwarden
+  - name: home-assistant
+    namespace: home-assistant
   - name: homer
     namespace: homer
+  - name: gitea
+    namespace: gitea
+  - name: unifi
+    namespace: unifi
