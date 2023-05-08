@@ -1,0 +1,3 @@
+---
+# defaults file for backup_pvc
+app_replicas: 1

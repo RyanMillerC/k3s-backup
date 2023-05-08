@@ -1,0 +1,33 @@
+- name: Get Deployment object
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ app_name }}"
+    namespace: "{{ app_namespace }}"
+  register: deployment
+
+- name: Scale Deployment to 0 Pods
+  kubernetes.core.k8s_scale:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ app_name }}"
+    namespace: "{{ app_namespace }}"
+    replicas: 0
+
+- name: Back up PVC
+  ansible.builtin.include_role:
+    name: backup_pvc
+  vars:
+    pvc_name: "{{ pvcs.persistentVolumeClaim.claimName }}"
+    pvc_namespace: "{{ app_namespace }}"
+  loop: "{{ deployment.resources[0].spec.template.spec.volumes }}"
+  loop_control:
+    loop_var: pvcs
+
+- name: Scale Deployment back up
+  kubernetes.core.k8s_scale:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ app_name }}"
+    namespace: "{{ app_namespace }}"
+    replicas: "{{ app_replicas }}"

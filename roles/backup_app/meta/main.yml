@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Ryan Miller
+  description: Back up persistent data from an application running on Kubernetes. This assumes host path storage is being used!
+  license: GPL-3.0
+  min_ansible_version: 2.9
+  platforms:
+  - name: RHEL
+    versions:
+    - 8
+  galaxy_tags:
+    - kubernetes
+
+# Dependencies on Anisble Galaxy collections
+collections: []
+
+# Dependencies on other roles
+dependencies: []
