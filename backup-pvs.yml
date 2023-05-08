@@ -4,10 +4,25 @@
   environment:
     K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   vars:
-    # Used for namespace
     app_name: homer
-    pvc_name: homer-assets
+    app_namespace: homer
+    # pvc_name: homer-assets
   tasks:
+    - name: Get Deployment object
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: "{{ app_name }}"
+        namespace: "{{ app_namespace }}"
+      register: deployment
+
+    - debug:
+        #var: deployment
+        msg: "{{ deployment.resources[0].spec.template.spec.volumes }}"
+
+    # Stop running playbook
+    - meta: end_play
+
     - name: Get PVC object
       kubernetes.core.k8s_info:
         api_version: v1
