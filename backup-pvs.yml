@@ -4,8 +4,14 @@
   environment:
     K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   vars:
+    # Name of the application deployment
     app_name: homer
+    # Name of the namespace the deployment and PVC are in
     app_namespace: homer
+    # Number of replicas the Deployment should have after back up is complete.
+    # This is intentionally not set back to the previous replicas in case the
+    # playbook failed previously and the number of replicas is 0.
+    app_replicas: 1
     # pvc_name: homer-assets
   tasks:
     - name: Get Deployment object
@@ -16,6 +22,14 @@
         namespace: "{{ app_namespace }}"
       register: deployment
 
+    - name: Scale Deployment to 0 Pods
+      kubernetes.core.k8s_scale:
+        api_version: apps/v1
+        kind: Deployment
+        name: "{{ app_name }}"
+        namespace: "{{ app_namespace }}"
+        replicas: 0
+
     - name: Back up PVC
       ansible.builtin.include_role:
         name: backup_pvc
@@ -23,3 +37,11 @@
         pvc_name: "{{ item.persistentVolumeClaim.claimName }}"
         pvc_namespace: "{{ app_namespace }}"
       loop: "{{ deployment.resources[0].spec.template.spec.volumes }}"
+
+    - name: Scale Deployment back up
+      kubernetes.core.k8s_scale:
+        api_version: apps/v1
+        kind: Deployment
+        name: "{{ app_name }}"
+        namespace: "{{ app_namespace }}"
+        replicas: "{{ app_replicas }}"
